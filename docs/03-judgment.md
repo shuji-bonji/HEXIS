@@ -4,8 +4,6 @@
 
 > **Judgment は層ではない。すべての境界に現れる再評価点である。**
 
----
-
 ## 3.1 なぜ単一層にできないのか
 
 「Judgment 層」という箱を1つ描くと、次の3つが記述できなくなる。
@@ -29,8 +27,6 @@ Judgment を状態（`isPermitted: true`）として持つと、文脈が落ち�
 
 「1回削除してよい」という許可を、2回の削除に使ってはならない。
 状態として持つ限り、この単回性は表現できない。
-
----
 
 ## 3.2 Judgment の定義
 
@@ -63,18 +59,18 @@ flowchart LR
 
 型定義の正は [04-invariants.md](04-invariants.md#インターフェース契約型スケッチ) にある。ここでは意味を述べる。
 
-| フィールド | 意味 | 欠けたときに起きること |
-|---|---|---|
-| `decision` | `Permit` / `Deny` の**二値** | — |
-| `proposal` | どの Proposal に対する判断か | [I0](04-invariants.md#i0) の検査ができない |
-| `authority` | 誰が発行したか（AuthorityRef） | 権限のない主体の判断が混入する |
-| `gate` | どの Gate で発行されたか | **他の Gate に持ち越せてしまう → judgment leakage**（[I3](04-invariants.md#i3)） |
-| `contextHash` | 発行時の文脈のハッシュ | 同じ Gate での文脈変化を見落とす（[I2](04-invariants.md#i2)） |
-| `issuedAt` | 発行時刻 | 有効期限が計算できない |
-| `expiresAt` | 有効期限 | 無期限に古い判断が使われる |
-| `basis` | 根拠となった `InvariantRef[]`（非空） | Canon との接続が切れ、Evaluation が原因を切り分けられない |
-| `scope` | 許可される操作の範囲 | 過剰な権限が渡る |
-| `consumed` | 消費済みフラグ | 再利用（replay）が可能になる |
+| フィールド    | 意味                                  | 欠けたときに起きること                                                           |
+| ------------- | ------------------------------------- | -------------------------------------------------------------------------------- |
+| `decision`    | `Permit` / `Deny` の**二値**          | —                                                                                |
+| `proposal`    | どの Proposal に対する判断か          | [I0](04-invariants.md#i0) の検査ができない                                       |
+| `authority`   | 誰が発行したか（AuthorityRef）        | 権限のない主体の判断が混入する                                                   |
+| `gate`        | どの Gate で発行されたか              | **他の Gate に持ち越せてしまう → judgment leakage**（[I3](04-invariants.md#i3)） |
+| `contextHash` | 発行時の文脈のハッシュ                | 同じ Gate での文脈変化を見落とす（[I2](04-invariants.md#i2)）                    |
+| `issuedAt`    | 発行時刻                              | 有効期限が計算できない                                                           |
+| `expiresAt`   | 有効期限                              | 無期限に古い判断が使われる                                                       |
+| `basis`       | 根拠となった `InvariantRef[]`（非空） | Canon との接続が切れ、Evaluation が原因を切り分けられない                        |
+| `scope`       | 許可される操作の範囲                  | 過剰な権限が渡る                                                                 |
+| `consumed`    | 消費済みフラグ                        | 再利用（replay）が可能になる                                                     |
 
 > [!IMPORTANT]
 > **`Silence` は `decision` の値ではない。**
@@ -87,8 +83,6 @@ flowchart LR
 `gate`、`contextHash`、`consumed` の3つが、既存のフレームワークにない部分である。
 `gate` が Gate 間の持ち越しを、`contextHash` が同一 Gate での文脈変化を、
 `consumed` が replay を封じる。
-
----
 
 ## 3.3 Gate
 
@@ -156,8 +150,6 @@ Gate を密に置けば安全性が上がり、遅くなる。疎に置けばそ
 > **唯一の例外**は、Structure の `outOfScope` に理由つきで宣言された範囲である
 > （[6.5](06-conformance.md#65-部分適用)）。宣言なき省略は Gate Omission である。
 
----
-
 ## 3.4 Proposal と Judgment の分離
 
 ```mermaid
@@ -188,20 +180,20 @@ flowchart LR
 type Proposal = {
   readonly _tag: 'Proposal';
   id: ProposalId;
-  proposer: SubjectRef;      // I0: authority と一致してはならない
+  proposer: SubjectRef; // I0: authority と一致してはならない
   intent: string;
   suggestedScope: Scope;
-  reasoning?: string;        // 参考情報。根拠（basis）ではない
+  reasoning?: string; // 参考情報。根拠（basis）ではない
 };
 
 type Judgment = {
   readonly _tag: 'Judgment';
-  decision: 'Permit' | 'Deny';   // Silence は含まない
-  authority: AuthorityRef;       // Proposal には存在しないフィールド
-  gate: GateRef;                 // I3
-  contextHash: Hash;             // I2
-  consumed: boolean;             // I4
-  basis: NonEmptyArray<InvariantRef>;  // I9
+  decision: 'Permit' | 'Deny'; // Silence は含まない
+  authority: AuthorityRef; // Proposal には存在しないフィールド
+  gate: GateRef; // I3
+  contextHash: Hash; // I2
+  consumed: boolean; // I4
+  basis: NonEmptyArray<InvariantRef>; // I9
   // …（issuedAt, expiresAt, scope, id, proposal は 04 章参照）
 };
 
@@ -228,20 +220,18 @@ Proposal に含まれる `reasoning` は**参考情報**であって、`basis` �
 もっともらしい理由づけは決定の後から作れる。
 LLM の reasoning を `basis` に昇格させると、中核命題の前提に戻ってしまう。
 
----
-
 ## 3.5 Silence
 
 `Silence` は、成功でも失敗でもない第3の終了状態である。
 
 ### いつ Silence になるか
 
-| 状況 | なぜ Silence か |
-|---|---|
-| 権威主体が応答しない | 判断が存在しない。「たぶん許可」で代替してはならない |
-| 権威主体が特定できない | Structure に穴がある。実行してはならない |
-| 判断に必要な情報が不足している | 補完すると hallucination になる |
-| Canon の Invariant が相互に矛盾している | どちらを守るかを機械が決めてはならない |
+| 状況                                    | なぜ Silence か                                      |
+| --------------------------------------- | ---------------------------------------------------- |
+| 権威主体が応答しない                    | 判断が存在しない。「たぶん許可」で代替してはならない |
+| 権威主体が特定できない                  | Structure に穴がある。実行してはならない             |
+| 判断に必要な情報が不足している          | 補完すると hallucination になる                      |
+| Canon の Invariant が相互に矛盾している | どちらを守るかを機械が決めてはならない               |
 
 ### Silence の記録
 
@@ -251,15 +241,19 @@ Silence は「何もしなかった」ではない。**「判断が得られな�
 ```typescript
 type Terminal =
   | { state: 'Completed'; outcome: Outcome; judgment: JudgmentId }
-  | { state: 'Denied';    basis: NonEmptyArray<InvariantRef>; judgment: JudgmentId }
-  | { state: 'Silence';   cause: SilenceCause; gate: GateRef }  // ← 失敗ではない
-  | { state: 'Failed';    error: ExecutionError };              // ← これが失敗
+  | {
+      state: 'Denied';
+      basis: NonEmptyArray<InvariantRef>;
+      judgment: JudgmentId;
+    }
+  | { state: 'Silence'; cause: SilenceCause; gate: GateRef } // ← 失敗ではない
+  | { state: 'Failed'; error: ExecutionError }; // ← これが失敗
 
 type SilenceCause =
-  | 'AuthorityUnavailable'    // 権威主体が応答しない
-  | 'AuthorityUndefined'      // Structure に権威主体の定義がない
-  | 'InsufficientContext'     // 判断に必要な情報が足りない
-  | 'CanonContradiction';     // Invariant が相互に矛盾している
+  | 'AuthorityUnavailable' // 権威主体が応答しない
+  | 'AuthorityUndefined' // Structure に権威主体の定義がない
+  | 'InsufficientContext' // 判断に必要な情報が足りない
+  | 'CanonContradiction'; // Invariant が相互に矛盾している
 ```
 
 `Silence` は `judgment` フィールドを持たない。**判断が存在しないから Silence なのである。**
@@ -279,8 +273,6 @@ fail-closed な Gate は SLA を悪化させる。悪化した指標は改善対
 
 Silence 率が高いことは、システムの故障ではなく **Structure の設計不足**を示す。
 改善すべきは Gate ではなく、権威主体の可用性か、Canon の網羅性である。
-
----
 
 ## 3.6 Judgment が横断的であることの帰結
 
@@ -304,15 +296,13 @@ Judgment だけが点線で描かれるのは、**それが構造上の場所で
 
 この扱いには代償がある。
 
-| 得たもの | 失ったもの |
-|---|---|
-| judgment leakage を記述できる | 図が単純な6層スタックにならない |
-| 文脈依存性を型で表現できる | 「Judgment 層の担当者」を組織図に書けない |
-| replay を封じられる | Gate ごとの権威主体を全て定義する負担 |
+| 得たもの                      | 失ったもの                                |
+| ----------------------------- | ----------------------------------------- |
+| judgment leakage を記述できる | 図が単純な6層スタックにならない           |
+| 文脈依存性を型で表現できる    | 「Judgment 層の担当者」を組織図に書けない |
+| replay を封じられる           | Gate ごとの権威主体を全て定義する負担     |
 
 3つ目の負担は実務上重い。Gate を1つ置くたびに「誰が判断するのか」を決めねばならない。
 しかしそれは HEXIS が作り出した負担ではなく、**元からあった曖昧さを可視化しただけ**である。
-
----
 
 次: [04-invariants.md](04-invariants.md) — これらを不変条件として形式化する

@@ -6,29 +6,26 @@
 各不変条件には**反証手続き**を併記する。
 反証手続きを持たない不変条件は、[P1](../README.md#設計原則) により本仕様に含めない。
 
----
-
 ## 不変条件一覧
 
-| # | 名前 | 一行 |
-|---|---|---|
-| [I0](#i0) | **Proposer / Authority Separation** | 提案を出した主体が、その提案の許可を出してはならない |
-| [I1](#i1) | Fail-Closed | 有効な Permit なしに Action を実行してはならない |
-| [I2](#i2) | Judgment Freshness | Judgment は発行時文脈と消費時文脈の一致を検証されねばならない |
-| [I3](#i3) | Gate Binding | Judgment は発行された Gate でしか有効でない |
-| [I4](#i4) | Single Consumption | Judgment は1回しか消費できない |
-| [I5](#i5) | Canon Amendment | Canon の変更は Canon 自身が定める手続きによる |
-| [I6](#i6) | Evaluation Independence | 評価主体は実行主体と同一であってはならない |
-| [I7](#i7) | Authority Non-Delegation | 確率的コンポーネントは Judgment を発行できない |
-| [I8](#i8) | Silence Validity | Silence は失敗として集計されてはならない |
-| [I9](#i9) | Basis Traceability | すべての Judgment は Canon の Invariant を根拠として指す |
+| #         | 名前                                | 一行                                                          |
+| --------- | ----------------------------------- | ------------------------------------------------------------- |
+| [I0](#i0) | **Proposer / Authority Separation** | 提案を出した主体が、その提案の許可を出してはならない          |
+| [I1](#i1) | Fail-Closed                         | 有効な Permit なしに Action を実行してはならない              |
+| [I2](#i2) | Judgment Freshness                  | Judgment は発行時文脈と消費時文脈の一致を検証されねばならない |
+| [I3](#i3) | Gate Binding                        | Judgment は発行された Gate でしか有効でない                   |
+| [I4](#i4) | Single Consumption                  | Judgment は1回しか消費できない                                |
+| [I5](#i5) | Canon Amendment                     | Canon の変更は Canon 自身が定める手続きによる                 |
+| [I6](#i6) | Evaluation Independence             | 評価主体は実行主体と同一であってはならない                    |
+| [I7](#i7) | Authority Non-Delegation            | 確率的コンポーネントは Judgment を発行できない                |
+| [I8](#i8) | Silence Validity                    | Silence は失敗として集計されてはならない                      |
+| [I9](#i9) | Basis Traceability                  | すべての Judgment は Canon の Invariant を根拠として指す      |
 
 I0 は[中核命題](01-motivation.md#12-たまたま当たった問題)の形式化である。
 I1〜I9 は I0 を実装可能にするための条件であり、I0 を欠くと他の8つは形骸化する。
 
----
-
 <a id="i0"></a>
+
 ## I0 — Proposer / Authority Separation
 
 > **ある `Proposal` を生成した主体は、その `Proposal` に対する `Judgment` を
@@ -58,11 +55,11 @@ I7 が禁じるのは**確率的**な主体による発行のみであり、
 
 決定論的規則エンジンが Authority たりうるのは、次の3条件による。
 
-| 条件 | なぜ十分性に寄与するか |
-|---|---|
-| 同一入力に同一出力を返す（[I7](#i7)） | 判定が入力から**再計算可能**。記録の内側で真偽が確かめられる |
-| 規則が Canon の Invariant に紐づく（[I9](#i9)） | 判定の根拠が、判定より前にコミットされた文書に存在する |
-| 規則を含む Structure は確率的に生成されない（[P2](../README.md#設計原則)） | 規則自体が提案者の影響下にない |
+| 条件                                                                       | なぜ十分性に寄与するか                                       |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| 同一入力に同一出力を返す（[I7](#i7)）                                      | 判定が入力から**再計算可能**。記録の内側で真偽が確かめられる |
+| 規則が Canon の Invariant に紐づく（[I9](#i9)）                            | 判定の根拠が、判定より前にコミットされた文書に存在する       |
+| 規則を含む Structure は確率的に生成されない（[P2](../README.md#設計原則)） | 規則自体が提案者の影響下にない                               |
 
 3条件が揃うとき、記録に残る許可の根拠は「提案者の申告」ではなく
 「**事前にコミットされた規則テキスト + 入力**」になる。
@@ -89,9 +86,8 @@ I7 が禁じるのは**確率的**な主体による発行のみであり、
    提案主体が生成・改変できるものが Structure に記載されているかを確認する。
    記載のない支配可能な入力があれば I0 は破れている
 
----
-
 <a id="i1"></a>
+
 ## I1 — Fail-Closed
 
 > **有効な `Permit` を伴わない `Action` を実行してはならない（MUST NOT）。**
@@ -107,24 +103,23 @@ I7 が禁じるのは**確率的**な主体による発行のみであり、
 
 次をすべて満たすことをいう。
 
-| 条件 | 対応する不変条件 |
-|---|---|
-| `decision === 'Permit'` | — |
-| `judgment.gate === 現在の Gate` | [I3](#i3) |
-| `contextHash === hash(現在の文脈)` | [I2](#i2) |
-| `expiresAt > now` | — |
-| `consumed === false` | [I4](#i4) |
-| `scope ⊇ 要求された操作` | — |
-| `basis.length > 0` | [I9](#i9) |
+| 条件                               | 対応する不変条件 |
+| ---------------------------------- | ---------------- |
+| `decision === 'Permit'`            | —                |
+| `judgment.gate === 現在の Gate`    | [I3](#i3)        |
+| `contextHash === hash(現在の文脈)` | [I2](#i2)        |
+| `expiresAt > now`                  | —                |
+| `consumed === false`               | [I4](#i4)        |
+| `scope ⊇ 要求された操作`           | —                |
+| `basis.length > 0`                 | [I9](#i9)        |
 
 ### 反証手続き
 
 実行トレースを走査し、`Outcome` が記録されているのに対応する
 「有効な」`Judgment` が存在しないものを探す。1件でもあれば I1 は破れている。
 
----
-
 <a id="i2"></a>
+
 ## I2 — Judgment Freshness
 
 > **Gate は、添付された Judgment の `contextHash` が、
@@ -140,13 +135,13 @@ I2 が扱うのは、**同じ Gate に再到達したときに、文脈が変わ
 
 `contextHash` の計算対象は Structure が定義する。以下を含まなければならない（MUST）。
 
-| 項目 | 理由 |
-|---|---|
-| Gate の識別子 | [I3](#i3) を `contextHash` の側からも担保する |
-| データの分類ラベル（PII / secret / public 等） | 分類が変われば判断が変わる |
-| 出力先の信頼境界 | 内部か egress かで判断が変わる |
-| 呼び出し元の主体 | 権限の起点 |
-| 直前の Action の結果の分類 | **これが最も見落とされる**（read-only の結果が secret を含みうる） |
+| 項目                                           | 理由                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| Gate の識別子                                  | [I3](#i3) を `contextHash` の側からも担保する                      |
+| データの分類ラベル（PII / secret / public 等） | 分類が変われば判断が変わる                                         |
+| 出力先の信頼境界                               | 内部か egress かで判断が変わる                                     |
+| 呼び出し元の主体                               | 権限の起点                                                         |
+| 直前の Action の結果の分類                     | **これが最も見落とされる**（read-only の結果が secret を含みうる） |
 
 これら以外の項目を含めるかは Structure の判断でよい（MAY）。
 
@@ -167,9 +162,8 @@ Gate α が `Stale` を記録せず素通しするなら I2 は破れている�
 Structure の `excludedFromContext` に理由つきで明記しなければならない（MUST）。
 含めなかった部分が leakage の経路になる。
 
----
-
 <a id="i3"></a>
+
 ## I3 — Gate Binding
 
 > **`Judgment` は、それが発行された Gate においてのみ有効である（MUST）。**
@@ -184,10 +178,10 @@ Structure の `excludedFromContext` に理由つきで明記しなければな�
 
 I2 との違いを再掲する。
 
-| | 防ぐもの | 検査対象 |
-|---|---|---|
-| [I2](#i2) | 同じ Gate に再到達したとき、文脈の変化を見落とす | Judgment オブジェクトの `contextHash` |
-| **I3** | Judgment やその通過事実が**別の Gate**に持ち越される | Judgment の `gate` フィールド、およびコード上の分岐 |
+|           | 防ぐもの                                             | 検査対象                                            |
+| --------- | ---------------------------------------------------- | --------------------------------------------------- |
+| [I2](#i2) | 同じ Gate に再到達したとき、文脈の変化を見落とす     | Judgment オブジェクトの `contextHash`               |
+| **I3**    | Judgment やその通過事実が**別の Gate**に持ち越される | Judgment の `gate` フィールド、およびコード上の分岐 |
 
 I3 には2つの破られ方がある。
 
@@ -211,9 +205,8 @@ Gate をスキップするのではなく、**Structure から Gate を除去す
 そうすればスキップは Structure の設計判断として記録され、レビューの対象になる。
 暗黙のスキップは記録に残らない。
 
----
-
 <a id="i4"></a>
+
 ## I4 — Single Consumption
 
 > **`Judgment` は最大1回しか消費できない（MUST）。**
@@ -250,9 +243,8 @@ Action が失敗してリトライする場合、**新しい Judgment を取得�
 
 同一の `Judgment.id` が2つ以上の `Outcome` に紐づいているものを探す。
 
----
-
 <a id="i5"></a>
+
 ## I5 — Canon Amendment
 
 > **Canon の変更は、Canon 自身が定める Amendment Procedure によってのみ行われる（MUST）。**
@@ -272,22 +264,21 @@ Discussion #27 では Canon を「不変条件」と呼ぶ一方で
 
 ### Amendment Procedure が最低限含むべきもの
 
-| 項目 | 例 |
-|---|---|
-| 発議できる主体 | 誰が改正を提案できるか |
-| 承認に必要な主体 | 何名の / どの権限の承認が要るか |
-| 発効までの猶予 | 即時発効を禁じる（実行中の判断との整合のため） |
-| 遡及の扱い | 過去の Judgment を無効化するか、しないか |
-| 記録 | 改正前後の差分と、改正の根拠となった `Finding[]` |
+| 項目             | 例                                               |
+| ---------------- | ------------------------------------------------ |
+| 発議できる主体   | 誰が改正を提案できるか                           |
+| 承認に必要な主体 | 何名の / どの権限の承認が要るか                  |
+| 発効までの猶予   | 即時発効を禁じる（実行中の判断との整合のため）   |
+| 遡及の扱い       | 過去の Judgment を無効化するか、しないか         |
+| 記録             | 改正前後の差分と、改正の根拠となった `Finding[]` |
 
 ### 反証手続き
 
 Canon のバージョン履歴と、Amendment Procedure が要求する承認記録を突き合わせる。
 承認記録のないバージョン遷移があれば I5 は破れている。
 
----
-
 <a id="i6"></a>
+
 ## I6 — Evaluation Independence
 
 > **`Evaluation` を実行する主体は、評価対象の `Action` を実行した主体と
@@ -307,12 +298,12 @@ Canon のバージョン履歴と、Amendment Procedure が要求する承認記
 
 接地の例:
 
-| 評価対象 | 接地先（別の命題空間） |
-|---|---|
-| 「このコードは正しい」 | テストの実行結果（プロセスの終了コード） |
-| 「この PDF は PDF/A に適合する」 | 外部検証器の判定 |
-| 「この回答は事実に基づく」 | 一次資料の取得結果との文字列照合 |
-| 「この操作は安全だった」 | 実際に変更されたリソースの一覧 |
+| 評価対象                         | 接地先（別の命題空間）                   |
+| -------------------------------- | ---------------------------------------- |
+| 「このコードは正しい」           | テストの実行結果（プロセスの終了コード） |
+| 「この PDF は PDF/A に適合する」 | 外部検証器の判定                         |
+| 「この回答は事実に基づく」       | 一次資料の取得結果との文字列照合         |
+| 「この操作は安全だった」         | 実際に変更されたリソースの一覧           |
 
 接地先がない場合、その Evaluation は成立しない。
 **「接地できないので評価できなかった」と記録することが、正しい Evaluation の振る舞いである。**
@@ -324,9 +315,8 @@ Canon のバージョン履歴と、Amendment Procedure が要求する承認記
 2. 列挙したデータソースと、評価対象の `Judgment` が参照した入力を突き合わせる。
    同一のものが接地先として使われていれば I6 は破れている
 
----
-
 <a id="i7"></a>
+
 ## I7 — Authority Non-Delegation
 
 > **確率的コンポーネントは `Judgment` を発行してはならない（MUST NOT）。**
@@ -346,11 +336,11 @@ I7 は [I0](#i0) の**部分集合ではない**。両方が必要である。
 
 ### 権威主体になりうるもの
 
-| 主体 | 条件 |
-|---|---|
-| 人間 | Structure に `Authority` として登録されていること |
+| 主体                 | 条件                                                                                                        |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 人間                 | Structure に `Authority` として登録されていること                                                           |
 | 決定論的規則エンジン | 規則が Canon の Invariant に紐づき、監査可能であること。入力の支配関係が [I0](#i0) により列挙されていること |
-| 外部検証器 | 判定基準が公開されており、同一入力に同一判定を返すこと |
+| 外部検証器           | 判定基準が公開されており、同一入力に同一判定を返すこと                                                      |
 
 ### LLM を「使ってはいけない」わけではない
 
@@ -366,9 +356,8 @@ LLM は Proposal を出す。その Proposal が良質であれば、権威主�
 `authority` フィールドに入る値の出自を追跡する。
 LLM の出力から直接構成されているものがあれば I7 は破れている。
 
----
-
 <a id="i8"></a>
+
 ## I8 — Silence Validity
 
 > **`Silence` を `Failed` として集計してはならない（MUST NOT）。**
@@ -384,12 +373,12 @@ I8 は I1 を長期的に維持するための条件である。
 
 ### Silence 率の読み方
 
-| 症状 | 示唆される原因 | 見るべき要素 |
-|---|---|---|
-| 特定 Gate の Silence 率が高い | その Gate の権威主体が不在 or 過負荷 | Structure |
-| 全体的に Silence 率が上昇 | Canon に対して文脈が想定外 | Canon |
-| `CanonContradiction` が出る | Canon の自己矛盾 | Canon（要人間レビュー） |
-| Silence 率が **0** | **Gate が機能していない疑い**（断定ではない） | Structure（要検査） |
+| 症状                          | 示唆される原因                                | 見るべき要素            |
+| ----------------------------- | --------------------------------------------- | ----------------------- |
+| 特定 Gate の Silence 率が高い | その Gate の権威主体が不在 or 過負荷          | Structure               |
+| 全体的に Silence 率が上昇     | Canon に対して文脈が想定外                    | Canon                   |
+| `CanonContradiction` が出る   | Canon の自己矛盾                              | Canon（要人間レビュー） |
+| Silence 率が **0**            | **Gate が機能していない疑い**（断定ではない） | Structure（要検査）     |
 
 最後の行は診断の**観点**であって、判定基準ではない。
 Silence が構造的に発生しない設計（すべての Gate の Authority が規則エンジンで、
@@ -400,9 +389,8 @@ Silence が構造的に発生しない設計（すべての Gate の Authority �
 
 監視・SLA 定義を検査し、`Silence` が `Failed` と同じカウンタに入っていないかを確認する。
 
----
-
 <a id="i9"></a>
+
 ## I9 — Basis Traceability
 
 > **すべての `Judgment` は、`basis` として Canon の `Invariant` を1つ以上指さなければならない（MUST）。**
@@ -430,8 +418,6 @@ Canon と実行時の判断を接続する唯一の線がこれである。
    存在しないものがあり、かつ Amendment Procedure が「遡及して無効化する」と
    定めている場合、[I5](#i5) の遡及処理が実行されていない
 
----
-
 ## P5（Procedure の決定論性）に不変条件がない理由
 
 [README](../README.md#設計原則) の設計原則のうち、P5 だけが対応する不変条件を持たない。
@@ -441,8 +427,6 @@ Canon と実行時の判断を接続する唯一の線がこれである。
 複数実行の比較を要する性質はこの形式に載らない。
 
 P5 は不変条件ではなく、[チェックリスト P-2](06-conformance.md#procedure) として検査する。
-
----
 
 ## インターフェース契約（型スケッチ）
 
@@ -467,17 +451,17 @@ type Invariant = {
 type Canon = {
   version: SemVer;
   invariants: Invariant[];
-  amendmentProcedure: AmendmentProcedure;  // I5: 必須
+  amendmentProcedure: AmendmentProcedure; // I5: 必須
 };
 
 // ---- Structure ----
 type AuthorityRef = string & { readonly __brand: 'AuthorityRef' };
-type GateRef      = string & { readonly __brand: 'GateRef' };
-type SubjectRef   = string & { readonly __brand: 'SubjectRef' };
+type GateRef = string & { readonly __brand: 'GateRef' };
+type SubjectRef = string & { readonly __brand: 'SubjectRef' };
 
 type Authority = {
   ref: AuthorityRef;
-  kind: 'Human' | 'DeterministicRule' | 'ExternalValidator';  // I7: LLM は含まれない
+  kind: 'Human' | 'DeterministicRule' | 'ExternalValidator'; // I7: LLM は含まれない
   canIssueFor: GateRef[];
   /** I0: 提案主体が生成・改変できる入力。列挙されないものがあれば I0 違反 */
   proposerControlledInputs: { field: string; rationale: string }[];
@@ -506,10 +490,10 @@ type Structure = {
 type Proposal = {
   readonly _tag: 'Proposal';
   id: ProposalId;
-  proposer: SubjectRef;       // I0: これと authority の一致を禁じる
+  proposer: SubjectRef; // I0: これと authority の一致を禁じる
   intent: string;
   suggestedScope: Scope;
-  reasoning?: string;         // 参考。basis にはならない
+  reasoning?: string; // 参考。basis にはならない
 };
 
 /**
@@ -521,14 +505,14 @@ type Judgment = {
   id: JudgmentId;
   proposal: ProposalId;
   decision: 'Permit' | 'Deny';
-  authority: AuthorityRef;    // I0, I7
-  gate: GateRef;              // I3
-  contextHash: Hash;          // I2
+  authority: AuthorityRef; // I0, I7
+  gate: GateRef; // I3
+  contextHash: Hash; // I2
   issuedAt: Timestamp;
   expiresAt: Timestamp;
-  basis: NonEmptyArray<InvariantRef>;  // I9
+  basis: NonEmptyArray<InvariantRef>; // I9
   scope: Scope;
-  consumed: boolean;          // I4
+  consumed: boolean; // I4
 };
 
 type SilenceCause =
@@ -539,9 +523,13 @@ type SilenceCause =
 
 type Terminal =
   | { state: 'Completed'; outcome: Outcome; judgment: JudgmentId }
-  | { state: 'Denied';    basis: NonEmptyArray<InvariantRef>; judgment: JudgmentId }
-  | { state: 'Silence';   cause: SilenceCause; gate: GateRef }   // I8: Failed ではない
-  | { state: 'Failed';    error: ExecutionError };
+  | {
+      state: 'Denied';
+      basis: NonEmptyArray<InvariantRef>;
+      judgment: JudgmentId;
+    }
+  | { state: 'Silence'; cause: SilenceCause; gate: GateRef } // I8: Failed ではない
+  | { state: 'Failed'; error: ExecutionError };
 
 // ---- 契約 ----
 
@@ -573,29 +561,27 @@ declare function evaluate(
   evaluator: EvaluatorRef,
   canon: Canon,
   trace: Trace[],
-  grounding: ExternalGrounding,   // 省略不可
+  grounding: ExternalGrounding, // 省略不可
 ): Finding[];
 ```
 
 ### 型で表現できないもの
 
-| 不変条件 | 型で表現できるか | 型が拘束する範囲 / 代替 |
-|---|---|---|
-| I0 Proposer/Authority Separation | ❌ | 実行時検査（`issue` 内で `authority.ref !== proposal.proposer`） |
-| I1 Fail-Closed | △ | `decision` と `consumed` のみ型で拘束。gate / contextHash / expiresAt / scope は実行時 |
-| I2 Freshness | ❌ | 実行時検証 + Stale ログ |
-| I3 Gate Binding | ❌ | 実行時検証（明示的持ち越し）+ 静的解析（暗黙のスキップ） |
-| I4 Single Consumption | △ | `consumed: false` を引数型で要求。線形型があれば完全に表現可 |
-| I5 Canon Amendment | ❌ | プロセス（CI での承認記録検査） |
-| I6 Evaluation Independence | ❌ | 実行時検査 + `grounding` を必須引数にする |
-| I7 Authority Non-Delegation | ✅ | `issue` の第1引数が `Authority` 型 |
-| I8 Silence Validity | ❌ | 監視設定のレビュー |
-| I9 Basis Traceability | ✅ | `NonEmptyArray<InvariantRef>` |
+| 不変条件                         | 型で表現できるか | 型が拘束する範囲 / 代替                                                                |
+| -------------------------------- | ---------------- | -------------------------------------------------------------------------------------- |
+| I0 Proposer/Authority Separation | ❌               | 実行時検査（`issue` 内で `authority.ref !== proposal.proposer`）                       |
+| I1 Fail-Closed                   | △                | `decision` と `consumed` のみ型で拘束。gate / contextHash / expiresAt / scope は実行時 |
+| I2 Freshness                     | ❌               | 実行時検証 + Stale ログ                                                                |
+| I3 Gate Binding                  | ❌               | 実行時検証（明示的持ち越し）+ 静的解析（暗黙のスキップ）                               |
+| I4 Single Consumption            | △                | `consumed: false` を引数型で要求。線形型があれば完全に表現可                           |
+| I5 Canon Amendment               | ❌               | プロセス（CI での承認記録検査）                                                        |
+| I6 Evaluation Independence       | ❌               | 実行時検査 + `grounding` を必須引数にする                                              |
+| I7 Authority Non-Delegation      | ✅               | `issue` の第1引数が `Authority` 型                                                     |
+| I8 Silence Validity              | ❌               | 監視設定のレビュー                                                                     |
+| I9 Basis Traceability            | ✅               | `NonEmptyArray<InvariantRef>`                                                          |
 
 **完全に型で表現できるのは10のうち2つだけである。** これは HEXIS の弱点ではなく、
 [06-conformance.md](06-conformance.md) が「宣言・適合・検証」を分ける理由そのものである。
 残り8つは、コードを読むだけでは確かめられない。**測るしかない。**
-
----
 
 次: [05-failure-modes.md](05-failure-modes.md) — なぜ要素は6つなのか
