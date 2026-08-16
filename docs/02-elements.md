@@ -266,6 +266,7 @@ Judgment からは検出できない。**Judgment は結果を見ていない**�
 > 2. Action の実装手順（PDFを開く → Hash生成 → 署名 → タイムスタンプ）
 >
 > 本仕様は **2 に統一する**。1 は **Gate** として Structure に属させる。
+> 決定の記録は [ADR-003](adr/003-procedure-is-deterministic-steps.md)。
 >
 > 理由: 1 は「権限」の話であり、2 は「再現性」の話である。
 > 両者は失敗モードが異なる（権限の誤配分 vs 再現不能）ため、

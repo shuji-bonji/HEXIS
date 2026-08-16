@@ -127,17 +127,18 @@ Judgment を単一の層として描かないのが HEXIS の中心的な設計�
 | [06-conformance.md](docs/06-conformance.md)       | 適合レベル L0〜L3 とチェックリスト               |
 | [07-worked-example.md](docs/07-worked-example.md) | 適用例                                           |
 | [glossary.md](docs/glossary.md)                   | 用語集（日英対応）                               |
+| [adr/](docs/adr/README.md)                        | 主要設計決定（ADR-001〜003）                     |
 
 ## 由来
 
 本仕様は [Situational-Awareness-and-Decision-Making Discussion #27](https://github.com/shuji-bonji/Situational-Awareness-and-Decision-Making/discussions/27) の
 議論を起点とする。Discussion 時点で未決着だった 3 つの論点は、本仕様で以下のように決着させた。
 
-| 論点                                 | 決着                                                                        | 根拠                                            |
-| ------------------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------- |
-| Procedure は実行前ゲートか実装手順か | **実装手順**に統一。実行前ゲートは Structure が配置する **Gate** として分離 | [02-elements.md](docs/02-elements.md#procedure) |
-| Judgment は単一層か                  | **横断的関心事**。すべての Gate に現れる再評価点                            | [03-judgment.md](docs/03-judgment.md)           |
-| Canon は不変か                       | **変更不可ではない。変更に Canon 自身が定める手続きを要する**               | [04-invariants.md](docs/04-invariants.md#i5)    |
+| 論点                                 | 決着                                                                        | 根拠                                                                                         |
+| ------------------------------------ | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Procedure は実行前ゲートか実装手順か | **実装手順**に統一。実行前ゲートは Structure が配置する **Gate** として分離 | [ADR-003](docs/adr/003-procedure-is-deterministic-steps.md) / [02](docs/02-elements.md#procedure) |
+| Judgment は単一層か                  | **横断的関心事**。すべての Gate に現れる再評価点                            | [ADR-001](docs/adr/001-judgment-is-event-not-layer.md) / [03](docs/03-judgment.md)          |
+| Canon は不変か                       | **変更不可ではない。変更に Canon 自身が定める手続きを要する**               | [04-invariants.md](docs/04-invariants.md#i5)                                                 |
 
 ## ライセンス
 

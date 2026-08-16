@@ -1,6 +1,6 @@
 # 03. Judgment を横断的関心事として再定義する
 
-これが HEXIS の中心的な設計判断である。
+これが HEXIS の中心的な設計判断である。決定の記録は [ADR-001](adr/001-judgment-is-event-not-layer.md)。Silence の位置づけは [ADR-002](adr/002-silence-is-valid-terminal.md)。
 
 > **Judgment は層ではない。すべての境界に現れる再評価点である。**
 
