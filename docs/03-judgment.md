@@ -104,6 +104,32 @@ Gate は Judgment を**発行しない**。Gate は次を行う。
 > （人間が先に承認しておく運用）と、同一 Gate を含むループの2周目である。
 > 上流の別 Gate で得た Judgment がここで使われることは、[I3](04-invariants.md#i3) により決してない。
 
+[README の全体像](../README.md#全体像) が Gate を1つに簡略化している部分の本体が次の図である。
+Gate α で得た Permit は Gate β では無効であり、β は自前の判断を要求する。
+
+```mermaid
+sequenceDiagram
+  actor P as 提案主体
+  participant Ga as Gate α
+  actor Auth as 権威主体
+  participant X as Action / Procedure
+  participant Gb as Gate β
+
+  P->>Ga: Proposal
+  Ga->>Auth: 判断を要求
+  Auth-->>Ga: Judgment（Permit, gate=α）
+  Ga->>X: Permit を消費
+  X-->>P: 結果
+
+  P->>Gb: Proposal（α の Judgment を添付）
+  Note over Gb: judgment.gate は α であり β ではない
+  Gb--xP: Gate 越境として記録（I3）
+  Gb->>Auth: この Gate の判断を要求
+  Note over Gb,Auth: 以降は Gate β 自身の Judgment。<br/>α の Permit はここでは使えない
+```
+
+1つの Gate の内部は、次の状態機械である。
+
 ```mermaid
 flowchart TD
   IN["Proposal 到来"] --> HAS{"Judgment が<br/>添付されているか"}

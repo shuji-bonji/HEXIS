@@ -82,6 +82,39 @@ Judgment を単一の層として描かないのが HEXIS の中心的な設計�
 
 図中の Gate が1つに見えるのは簡略化である。実際には egress を含む各境界に置かれ、
 **ある Gate で得た Judgment を別の Gate で使うことはできない**（[I3](docs/04-invariants.md#i3)）。
+2 Gate での時系列は [03-judgment.md §3.3](docs/03-judgment.md#33-gate) にある。
+
+### 実行時の流れ
+
+Canon / Structure / Evaluation は設計時・事後であり、この図の参加者ではない。
+Judgment は権威主体が発行するメッセージ、Silence は判断が発行されなかったことの記録である。
+
+```mermaid
+sequenceDiagram
+  actor P as 提案主体
+  participant G as Gate
+  actor A as 権威主体
+  participant X as Action / Procedure
+
+  P->>G: Proposal
+  G->>G: I2 / I3 / I4 を検証
+  alt この Gate の有効な Permit がある
+    G->>X: Permit を消費
+    Note over X: Procedure が Trace を残す
+  else 再判断が必要
+    G->>A: 判断を要求
+    alt Permit
+      A-->>G: Judgment（Permit）
+      G->>X: Permit を消費
+      Note over X: Procedure が Trace を残す
+    else Deny
+      A-->>G: Judgment（Deny）
+      Note over G: Denied（実行しない）
+    else 応答なし / 権限不明 / 情報不足
+      Note over G: Silence（Judgment は発行されない）
+    end
+  end
+```
 
 ## 6要素
 
